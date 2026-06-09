@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal Hifz</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,500;0,7..72,700;1,7..72,300&display=swap');
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2333;--border:#2a3444;--gold:#c9a84c;--gold-dim:#6a5520;--gold-glow:rgba(201,168,76,0.10);--a1:#c9a84c;--a2:#7ec8c8;--b:#c97caa;--a1-dim:rgba(201,168,76,0.10);--a2-dim:rgba(126,200,200,0.10);--b-dim:rgba(201,124,170,0.10);--a1-border:rgba(201,168,76,0.30);--a2-border:rgba(126,200,200,0.30);--b-border:rgba(201,124,170,0.30);--green:#4ade80;--green-dim:rgba(74,222,128,0.10);--rose:#e07070;--rose-dim:rgba(224,112,112,0.12);--text:#e8e0d0;--muted:#6b7280;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Literata',Georgia,serif;color:var(--text);min-height:100vh;padding:20px 16px 80px;max-width:480px;margin:0 auto}
+.header{text-align:center;margin-bottom:22px}
+.header-arabic{font-family:'Scheherazade New',serif;font-size:2rem;color:var(--gold);letter-spacing:2px}
+.header-title{font-size:1.3rem;font-weight:700;margin-top:2px}
+.header-sub{font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:2px}
+.tabs{display:flex;gap:3px;background:var(--surface);border-radius:50px;padding:4px;border:1px solid var(--border);margin-bottom:18px}
+.tab{flex:1;padding:8px 4px;border:none;background:none;border-radius:50px;cursor:pointer;font-family:'Literata',serif;font-size:0.72rem;font-weight:500;color:var(--muted);transition:all 0.2s}
+.tab.active{background:var(--gold);color:#0d1117;font-weight:700}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px}
+.card-title{font-size:0.92rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.day-block{margin-bottom:10px}
+.day-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);cursor:pointer}
+.day-header.today{border-color:var(--gold-dim);background:var(--gold-glow)}
+.day-header.missed{border-color:rgba(224,112,112,0.3);background:var(--rose-dim)}
+.day-header.done{border-color:rgba(74,222,128,0.2);background:var(--green-dim)}
+.day-label{font-size:0.88rem;font-weight:600}
+.day-sub{font-size:0.7rem;color:var(--muted);margin-top:1px}
+.day-badge{font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:50px}
+.badge-today{background:var(--gold-glow);color:var(--gold);border:1px solid var(--gold-dim)}
+.badge-missed{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(224,112,112,0.35)}
+.badge-done{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,0.25)}
+.badge-future{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.day-tasks{display:flex;flex-direction:column;gap:5px;padding:6px 0 2px}
+.task-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:9px;border:1px solid transparent;font-size:0.82rem}
+.task-a1{background:var(--a1-dim);border-color:var(--a1-border)}
+.task-a2{background:var(--a2-dim);border-color:var(--a2-border)}
+.task-b{background:var(--b-dim);border-color:var(--b-border)}
+.task-cold{background:var(--rose-dim);border-color:rgba(224,112,112,0.30)}
+.task-label{display:flex;flex-direction:column;gap:2px;flex:1}
+.task-type{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+.task-type.a1{color:var(--a1)}.task-type.a2{color:var(--a2)}.task-type.b{color:var(--b)}.task-type.cold{color:var(--rose)}
+.task-pages{color:var(--text);font-size:0.8rem;line-height:1.4}
+.task-check{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--border);background:none;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;transition:all 0.15s}
+.task-check.checked{background:var(--green-dim);border-color:rgba(74,222,128,0.4);color:var(--green)}
+.sourah-section{margin-bottom:4px}
+.sourah-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sourah-ar{font-family:'Scheherazade New',serif;font-size:1.15rem;color:var(--gold)}
+.sourah-fr{font-size:0.72rem;color:var(--muted);font-style:italic;margin-left:5px}
+.sourah-stat{font-size:0.7rem;color:var(--muted)}
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:5px}
+.page-cell{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative}
+.page-cell:hover{border-color:var(--gold-dim)}
+.page-cell.a1-page{border-left:3px solid var(--a1)}
+.page-cell.a2-page{border-left:3px solid var(--a2)}
+.page-cell.b-page{border-left:3px solid var(--b)}
+.page-cell.cold-due{border-top:2px solid var(--rose)}
+.cold-dot{position:absolute;top:2px;right:3px;width:5px;height:5px;background:var(--rose);border-radius:50%}
+.page-num{font-size:0.65rem;color:var(--muted)}
+.page-circuit{font-size:0.66rem;font-weight:700;margin-top:1px}
+.page-cell.a1-page .page-circuit{color:var(--a1)}
+.page-cell.a2-page .page-circuit{color:var(--a2)}
+.page-cell.b-page .page-circuit{color:var(--b)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-box{background:var(--surface2);border-radius:10px;border:1px solid var(--border);padding:12px 8px;text-align:center}
+.stat-num{font-size:1.6rem;font-weight:700;line-height:1;margin-bottom:3px}
+.stat-label{font-size:0.67rem;color:var(--muted)}
+.progress-row{margin-bottom:10px}
+.progress-label{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--muted);margin-bottom:4px}
+.progress-wrap{background:var(--surface2);border-radius:50px;height:6px;overflow:hidden}
+.progress-fill{height:100%;border-radius:50px;transition:width 0.4s}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-end;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 14px 14px;padding:22px 18px;width:100%;max-width:440px;animation:slideUp 0.22s ease;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom:2px}
+.modal-sourah{font-family:'Scheherazade New',serif;color:var(--gold);font-size:1.05rem;margin-bottom:16px}
+.modal-field{margin-bottom:13px}
+.modal-label{font-size:0.75rem;color:var(--muted);margin-bottom:6px;display:block}
+.toggle-row{display:flex;gap:7px}
+.tog-btn{flex:1;padding:9px 5px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'Literata',serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center}
+.tog-btn.sel-a1{background:var(--a1-dim);border-color:var(--a1-border);color:var(--a1)}
+.tog-btn.sel-a2{background:var(--a2-dim);border-color:var(--a2-border);color:var(--a2)}
+.tog-btn.sel-b{background:var(--b-dim);border-color:var(--b-border);color:var(--b)}
+.tog-btn.sel-yes{background:var(--rose-dim);border-color:rgba(224,112,112,0.4);color:var(--rose)}
+.tog-btn.sel-no{background:var(--green-dim);border-color:rgba(74,222,128,0.3);color:var(--green)}
+.promote-info{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-radius:9px;padding:10px 12px;font-size:0.78rem;color:var(--green);margin-bottom:10px;line-height:1.5}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-save{flex:2;padding:11px;background:var(--gold);color:#0d1117;border:none;border-radius:9px;font-family:'Literata',serif;font-size:0.88rem;font-weight:700;cursor:pointer}
+.btn-cancel{flex:1;padding:11px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:9px;font-family:'Literata',serif;font-size:0.82rem;cursor:pointer}
+.btn-promote{flex:1;padding:11px;background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.3);border-radius:9px;font-family:'Literata',serif;font-size:0.78rem;font-weight:600;cursor:pointer}
+.legend{display:flex;gap:10px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:0.71rem;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hidden{display:none}
+.empty-state{text-align:center;color:var(--muted);font-style:italic;font-size:0.82rem;padding:14px 0}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="header-arabic">مُراجعة القرآن</div>
+<div class="header-title">Journal Hifz</div>
+<div class="header-sub">Sourahs 6–13 · Circuits A1 · A2 · B</div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab('planning')">Planning</button>
+<button class="tab" onclick="switchTab('pages')">Pages</button>
+<button class="tab" onclick="switchTab('stats')">Stats</button>
+</div>
+<div id="tab-planning"></div>
+<div id="tab-pages" class="hidden"></div>
+<div id="tab-stats" class="hidden"></div>
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+<div class="modal">
+<div class="modal-title" id="modal-title"></div>
+<div class="modal-sourah" id="modal-sourah"></div>
+<div class="modal-field"><span class="modal-label">Circuit</span>
+<div class="toggle-row">
+<button class="tog-btn" id="tog-a1" onclick="selCircuit('A1')">A1<br><span style="font-size:0.62rem;font-weight:400">Fluide</span></button>
+<button class="tog-btn" id="tog-a2" onclick="selCircuit('A2')">A2<br><span style="font-size:0.62rem;font-weight:400">Aide ok</span></button>
+<button class="tog-btn" id="tog-b" onclick="selCircuit('B')">B<br><span style="font-size:0.62rem;font-weight:400">Réappr.</span></button>
+</div></div>
+<div class="modal-field"><span class="modal-label">Valider un cold test B réussi ?</span>
+<div class="toggle-row">
+<button class="tog-btn" id="tog-cold-yes" onclick="selCold(true)">🧊 Oui, réussi</button>
+<button class="tog-btn" id="tog-cold-no" onclick="selCold(false)">Non</button>
+</div></div>
+<div id="promote-box"></div>
+<div class="modal-actions">
+<button class="btn-cancel" onclick="closeModal()">Annuler</button>
+<button class="btn-promote hidden" id="btn-promote" onclick="promotePage()">↑ → A2</button>
+<button class="btn-save" onclick="savePage()">Enregistrer</button>
+</div></div></div>
+
+<script>
+const SURAHS=[{num:6,ar:'الأنعام',fr:"Al-An'am",total:23},{num:7,ar:'الأعراف',fr:"Al-A'raf",total:26},{num:8,ar:'الأنفال',fr:'Al-Anfal',total:10},{num:9,ar:'التوبة',fr:'At-Tawba',total:21},{num:10,ar:'يونس',fr:'Yunus',total:14},{num:11,ar:'هود',fr:'Hud',total:15},{num:12,ar:'يوسف',fr:'Yusuf',total:14},{num:13,ar:'الرعد',fr:"Ar-Ra'd",total:6}];
+const INIT={};
+function sp(s,f,t,c){for(let p=f;p<=t;p++)INIT[`S${s}p${p}`]=c;}
+function sl(s,l,c){l.forEach(p=>INIT[`S${s}p${p}`]=c);}
+sp(6,1,13,'A1');sp(6,14,23,'B');
+sl(7,[1,2,3,4,5,6,7,8,9,10,14,15,17,18,24],'A2');
+sl(7,[11,12,13,16,19,20,21,22,23,25,26],'B');
+sp(8,1,4,'A2');sp(8,5,10,'B');
+sp(9,1,12,'A2');sp(9,13,21,'B');
+sp(10,1,7,'A2');sp(10,8,14,'B');
+sp(11,1,7,'A1');sp(11,8,15,'B');
+sp(12,1,7,'A2');sp(12,8,14,'B');
+sp(13,1,4,'A2');sp(13,5,6,'B');
+function loadDB(){try{const r=localStorage.getItem('hifz_v3');if(r)return JSON.parse(r);}catch(e){}
+const d={pages:{},checks:{},cycleStart:today()};
+for(const[k,c]of Object.entries(INIT))d.pages[k]={circuit:c,coldTest:false,coldTestCount:0,lastRevision:null};
+return d;}
+function saveDB(){try{localStorage.setItem('hifz_v3',JSON.stringify(DB));}catch(e){}}
+let DB=loadDB();
+SURAHS.forEach(s=>{for(let p=1;p<=s.total;p++){const k=`S${s.num}p${p}`;if(!DB.pages[k]&&INIT[k])DB.pages[k]={circuit:INIT[k],coldTest:false,coldTestCount:0,lastRevision:null};}});
+saveDB();
+function today(){return new Date().toISOString().split('T')[0];}
+function addDays(ds,n){const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
+function daysDiff(a,b){if(!a)return 999;return Math.floor((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
+function getSNum(k){const m=k.match(/^S(\d+)p/);return m?parseInt(m[1]):0;}
+function getPNum(k){const m=k.match(/^S(\d+)p(\d+)$/);return m?parseInt(m[2]):0;}
+function getSourah(k){return SURAHS.find(s=>s.num===getSNum(k));}
+function byCircuit(c){return Object.entries(DB.pages).filter(([k,v])=>v.circuit===c).sort((a,b)=>getSNum(a[0])!==getSNum(b[0])?getSNum(a[0])-getSNum(b[0]):getPNum(a[0])-getPNum(b[0])).map(([k])=>k);}
+function chunk(arr,n){if(!arr.length)return Array(n).fill([]);const res=[];const sz=Math.ceil(arr.length/n);for(let i=0;i<n;i++)res.push(arr.slice(i*sz,(i+1)*sz));while(res.length<n)res.push([]);return res;}
+function buildPlan(){const start=DB.cycleStart||today();const a1=byCircuit('A1'),a2=byCircuit('A2'),b=byCircuit('B');const a1g=chunk(a1,6);const a2g=chunk(a2,3);const plan=[];
+for(let i=0;i<6;i++){const ds=addDays(start,i);const a2idx=Math.floor(i/2)%Math.max(1,a2g.length);const bPage=b[i%Math.max(1,b.length)]||null;const coldPages=getLastBRevised(5,ds);const ck=`day_${ds}`;const isMissed=ds<today()&&!DB.checks[ck+'_done'];plan.push({date:ds,dayNum:i+1,a1:a1g[i]||[],a2:a2g[a2idx]||[],b:bPage?[bPage]:[],cold:coldPages,ck,isDone:!!DB.checks[ck+'_done'],isMissed});}return plan;}
+function getLastBRevised(n,beforeDate){return Object.entries(DB.pages).filter(([k,v])=>v.circuit==='B'&&v.lastRevision&&v.lastRevision<beforeDate).sort((a,b)=>b[1].lastRevision.localeCompare(a[1].lastRevision)).slice(0,n).map(([k])=>k);}
+function groupByS(keys){const g={};keys.forEach(k=>{const sn=getSNum(k),pn=getPNum(k);if(!g[sn])g[sn]=[];g[sn].push(pn);});return Object.entries(g).map(([sn,pages])=>{pages.sort((a,b)=>a-b);const ranges=[];let s=pages[0],e=pages[0];for(let i=1;i<=pages.length;i++){if(pages[i]===e+1){e=pages[i];}else{ranges.push(s===e?`p.${s}`:`p.${s}–${e}`);s=e=pages[i];}}return`S${sn} ${ranges.join(', ')}`;}).join(' · ');}
+function fmtDate(ds){const td=today();if(ds===td)return"Aujourd'hui";const diff=daysDiff(td,ds);if(diff===-1)return'Hier';if(diff===1)return'Demain';const d=new Date(ds+'T00:00:00');return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'});}
+const TABS=['planning','pages','stats'];
+let curTab='planning';
+function switchTab(t){curTab=t;TABS.forEach(id=>document.getElementById('tab-'+id).classList.toggle('hidden',id!==t));document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',TABS[i]===t));render();}
+function render(){if(curTab==='planning')renderPlanning();if(curTab==='pages')renderPages();if(curTab==='stats')renderStats();}
+function renderPlanning(){const plan=buildPlan();let html=`<div class="card" style="background:var(--gold-glow);border-color:var(--gold-dim);padding:12px 14px;margin-bottom:12px;"><div style="font-size:0.77rem;line-height:1.8;color:var(--muted);"><span style="color:var(--a1);font-weight:700">A1</span> 1×/sem &nbsp;·&nbsp;<span style="color:var(--a2);font-weight:700">A2</span> 2×/sem &nbsp;·&nbsp;<span style="color:var(--b);font-weight:700">B</span> 1 page/jour &nbsp;·&nbsp;<span style="color:var(--rose)">🧊</span> Cold test 5 dernières B</div></div>`;
+plan.forEach((day,idx)=>{const isT=day.date===today();const hCls=isT?'today':day.isDone?'done':day.isMissed?'missed':'';const badge=isT?`<span class="day-badge badge-today">Aujourd'hui</span>`:day.isDone?`<span class="day-badge badge-done">✓ Fait</span>`:day.isMissed?`<span class="day-badge badge-missed">Manqué</span>`:`<span class="day-badge badge-future">J${day.dayNum}</span>`;
+let tasks='';
+if(day.a1.length)tasks+=taskHtml('a1','A1','Circuit A1 · Fluide',day.a1,day.ck+'_a1');
+if(day.a2.length)tasks+=taskHtml('a2','A2','Circuit A2 · Avec aide',day.a2,day.ck+'_a2');
+if(day.b.length)tasks+=taskHtml('b','b','Circuit B · ½ page réapprentissage',day.b,day.ck+'_b',day.b[0]);
+if(day.cold.length)tasks+=coldTaskHtml(day.cold,day.ck+'_cold');
+if(!tasks)tasks=`<div class="empty-state">Repos · بارك الله فيك 🌿</div>`;
+html+=`<div class="day-block"><div class="day-header ${hCls}" onclick="toggleExpand(${idx})"><div><div class="day-label">${fmtDate(day.date)}</div><div class="day-sub">${day.a1.length} A1 · ${day.a2.length} A2 · ${day.b.length} B · ${day.cold.length} cold</div></div>${badge}</div><div class="day-tasks hidden" id="dx-${idx}">${tasks}</div></div>`;});
+document.getElementById('tab-planning').innerHTML=html;
+plan.forEach((day,idx)=>{if(day.date===today())document.getElementById('dx-'+idx)?.classList.remove('hidden');});}
+function taskHtml(type,typeLabel,title,pages,ck,bKey){const checked=!!DB.checks[ck];return`<div class="task-item task-${type}"><div class="task-label"><span class="task-type ${type}">${title}</span><span class="task-pages">${groupByS(pages)}</span></div><button class="task-check ${checked?'checked':''}" onclick="toggleCheck('${ck}'${bKey?`,'${bKey}'`:''})">${checked?'✓':''}</button></div>`;}
+function coldTaskHtml(pages,ck){const checked=!!DB.checks[ck];return`<div class="task-item task-cold"><div class="task-label"><span class="task-type cold">🧊 Cold test B</span><span class="task-pages">${groupByS(pages)}</span></div><button class="task-check ${checked?'checked':''}" onclick="toggleCheck('${ck}')">${checked?'✓':''}</button></div>`;}
+function toggleExpand(idx){const el=document.getElementById('dx-'+idx);el.classList.toggle('hidden');}
+function toggleCheck(ck,bKey){DB.checks[ck]=DB.checks[ck]?null:true;if(bKey&&DB.checks[ck]&&DB.pages[bKey]){DB.pages[bKey].lastRevision=today();}saveDB();render();}
+function renderPages(){let html='';SURAHS.forEach(s=>{const pages=Array.from({length:s.total},(_,i)=>i+1);html+=`<div class="card sourah-section"><div class="sourah-header"><div><span class="sourah-ar">${s.ar}</span><span class="sourah-fr">${s.fr}</span></div><div class="sourah-stat">${pages.filter(p=>DB.pages[`S${s.num}p${p}`]).length}/${s.total}</div></div><div class="pages-grid">${pages.map(p=>{const k=`S${s.num}p${p}`;const e=DB.pages[k];const c=e?e.circuit.toLowerCase():'';const cold=e&&e.coldTest;return`<div class="page-cell ${c?c+'-page':''} ${cold?'cold-due':''}" onclick="openModal('${k}')"><div class="page-num">p.${p}</div><div class="page-circuit">${e?e.circuit:'+'}</div></div>`;}).join('')}</div></div>`;});document.getElementById('tab-pages').innerHTML=html;}
+function renderStats(){const pv=Object.values(DB.pages);const a1=pv.filter(e=>e.circuit==='A1').length;const a2=pv.filter(e=>e.circuit==='A2').length;const b=pv.filter(e=>e.circuit==='B').length;const cold=pv.filter(e=>e.coldTest).length;const total=a1+a2+b;const allP=SURAHS.reduce((s,x)=>s+x.total,0);
+let html=`<div class="card"><div class="card-title">📊 Vue globale</div><div class="stats-grid"><div class="stat-box"><div class="stat-num" style="color:var(--a1)">${a1}</div><div class="stat-label">A1</div></div><div class="stat-box"><div class="stat-num" style="color:var(--a2)">${a2}</div><div class="stat-label">A2</div></div><div class="stat-box"><div class="stat-num" style="color:var(--b)">${b}</div><div class="stat-label">B</div></div></div><div class="progress-row"><div class="progress-label"><span>Pages trackées</span><span>${total}/${allP}</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${Math.round(total/allP*100)}%;background:var(--gold)"></div></div></div><div class="progress-row"><div class="progress-label"><span style="color:var(--rose)">🧊 Cold tests dus</span><span>${cold}</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${total?Math.round(cold/total*100):0}%;background:var(--rose)"></div></div></div></div>`;
+html+=`<div class="card"><div class="card-title">Par sourah</div>`;
+SURAHS.forEach(s=>{const a1s=Object.entries(DB.pages).filter(([k,v])=>getSNum(k)===s.num&&v.circuit==='A1').length;const a2s=Object.entries(DB.pages).filter(([k,v])=>getSNum(k)===s.num&&v.circuit==='A2').length;const bs=Object.entries(DB.pages).filter(([k,v])=>getSNum(k)===s.num&&v.circuit==='B').length;html+=`<div class="progress-row"><div class="progress-label"><span><span style="font-family:'Scheherazade New',serif;font-size:0.95rem;color:var(--gold)">${s.ar}</span> <span style="font-size:0.68rem">${s.fr}</span></span><span style="font-size:0.68rem"><span style="color:var(--a1)">A1:${a1s}</span> <span style="color:var(--a2)">A2:${a2s}</span> <span style="color:var(--b)">B:${bs}</span></span></div><div class="progress-wrap"><div style="height:100%;display:flex;border-radius:50px;overflow:hidden;"><div style="width:${Math.round(a1s/s.total*100)}%;background:var(--a1)"></div><div style="width:${Math.round(a2s/s.total*100)}%;background:var(--a2)"></div><div style="width:${Math.round(bs/s.total*100)}%;background:var(--b)"></div></div></div></div>`;});
+html+=`</div><div class="card" style="background:var(--gold-glow);border-color:var(--gold-dim);"><div style="font-size:0.77rem;line-height:1.9;color:var(--muted);"><strong style="color:var(--gold)">Système :</strong><br><span style="color:var(--a1)">●</span> <strong style="color:var(--text)">A1</strong> — Fluide (≤3 fautes) → 1×/semaine<br><span style="color:var(--a2)">●</span> <strong style="color:var(--text)">A2</strong> — Aide ok → 2×/semaine<br><span style="color:var(--b)">●</span> <strong style="color:var(--text)">B</strong> — Réapprentissage → ½ page/jour + cold test<br><span style="color:var(--green)">↑</span> <strong style="color:var(--text)">Promotion B→A2</strong> : 3 cold tests réussis</div></div>`;
+document.getElementById('tab-stats').innerHTML=html;}
+let mKey=null,mCircuit=null,mCold=false;
+function openModal(k){mKey=k;const e=DB.pages[k];const s=getSourah(k);mCircuit=e?e.circuit:'B';mCold=false;document.getElementById('modal-title').textContent=`Page ${getPNum(k)} — S${getSNum(k)}`;document.getElementById('modal-sourah').textContent=s?s.ar+' · '+s.fr:'';updCircuit();updCold();const cnt=e?(e.coldTestCount||0):0;const promotable=e&&e.circuit==='B'&&cnt>=3;document.getElementById('btn-promote').classList.toggle('hidden',!promotable);const pb=document.getElementById('promote-box');if(e&&e.circuit==='B'){pb.innerHTML=`<div class="promote-info">🧊 Cold tests validés : <strong>${cnt}/3</strong><br>${cnt>=3?'Prête pour la promotion en A2 ✓':`Encore ${3-cnt} pour passer en A2`}</div>`;}else{pb.innerHTML='';}document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');mKey=null;}
+function closeModalOutside(e){if(e.target===document.getElementById('modal'))closeModal();}
+function selCircuit(c){mCircuit=c;updCircuit();}
+function updCircuit(){document.getElementById('tog-a1').className='tog-btn'+(mCircuit==='A1'?' sel-a1':'');document.getElementById('tog-a2').className='tog-btn'+(mCircuit==='A2'?' sel-a2':'');document.getElementById('tog-b').className='tog-btn'+(mCircuit==='B'?' sel-b':'');}
+function selCold(v){mCold=v;updCold();}
+function updCold(){document.getElementById('tog-cold-yes').className='tog-btn'+(mCold===true?' sel-yes':'');document.getElementById('tog-cold-no').className='tog-btn'+(mCold===false?' sel-no':'');}
+function savePage(){if(!mKey)return;if(!DB.pages[mKey])DB.pages[mKey]={circuit:mCircuit,coldTest:false,coldTestCount:0,lastRevision:null};DB.pages[mKey].circuit=mCircuit;if(mCold&&mCircuit==='B'){DB.pages[mKey].coldTestCount=(DB.pages[mKey].coldTestCount||0)+1;}saveDB();closeModal();render();}
+function promotePage(){if(!mKey||!DB.pages[mKey])return;DB.pages[mKey].circuit='A2';DB.pages[mKey].coldTestCount=0;saveDB();closeModal();render();}
+render();
+</script>
+</body>
+</html>
